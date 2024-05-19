@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Downloader Video TikTok</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input:focus {
+            outline: none;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        #download-container {
+            display: none;
+        }
+        #download-container button {
+            background-color: #28a745;
+        }
+        .pFoot{
+            position: absolute;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Downloader Video TikTok</h2>
+        <input type="text" id="tiktok-url" placeholder="Masukkan link TikTok di sini" oninput="getValue()">
+        <button id="search-button">Cari Video</button>
+        <div id="download-container">
+            <button id="download-button">Download Video</button>
+        </div>
+    </div>
+<p class="pFoot">
+            Made with love | All right reserved by ar.
+        </p>
+    <script>
+        document.getElementById('search-button').addEventListener('click', function() {
+            const url = document.getElementById('tiktok-url').value;
+            const apiUrl = `https://api.ngodingaja.my.id/api/tiktok?url=${encodeURIComponent(url)}`;
+
+            fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    const downloadButton = document.getElementById('download-button');
+                    downloadButton.setAttribute('data-video-url', data.video);
+                    document.getElementById('download-container').style.display = 'block';
+                    document.getElementById('search-button').style.display = 'none';
+                } else {
+                    document.getElementById('download-container').style.display = 'none';
+                    alert('Gagal mendapatkan video. Coba lagi dengan link yang valid.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan. Coba lagi nanti.');
+            });
+        });
+
+        document.getElementById('download-button').addEventListener('click', function() {
+            const videoUrl = this.getAttribute('data-video-url');
+            const a = document.createElement('a');
+            a.href = videoUrl;
+            a.download = 'tiktok-video.mp4';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+        function getValue() {
+            document.getElementById('download-container').style.display = 'none';
+            document.getElementById('search-button').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
