@@ -5,13 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Downloader Video TikTok</title>
     <style>
+        #loader {
+            position: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100vh;
+            z-index: 101;
+            background-color: #ffffff;
+        }
+        #loader:after {
+            content: " ";
+            display: block;
+            width: 64px;
+            height: 64px;
+            margin: 8px;
+            border-radius: 50%;
+            border: 6px solid black;
+            border-color: black transparent black transparent;
+            animation: searah 1.2s linear infinite;
+        }
+
+@keyframes searah {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
         body {
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            height: 100vh;
+            height: 100%;
             background-color: #f0f0f0;
         }
         .container {
@@ -24,9 +54,13 @@
             margin: 0 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+        }
+        h2{
+            text-align: center;
         }
         input[type="text"] {
-            width: 280px;
+            width: 100%;
             padding: 10px;
             margin-right: 10px;
             border: 1px solid #ccc;
@@ -47,32 +81,54 @@
         button:disabled {
             background-color: #ccc;
         }
-        #download-container {
+        #download-container-video {
             display: none;
         }
-        #download-container button {
+        #download-container-video button {
             background-color: #28a745;
         }
-        .pFoot{
+        #download-container-audio {
+            display: none;
+        }
+        #download-container-audio button {
+            background-color: #28a745;
+        }
+        .pFoot {
             position: absolute;
             bottom: 0;
+        }
+        .dDownload{
+            display: flex;
+            flex-direction: row;
+            margin: 0 20px;
         }
     </style>
 </head>
 <body>
-
+    <div id="loader"></div>
     <div class="container">
-        <h2>Downloader Video TikTok</h2>
+        <h2>Downloader Video or Audio TikTok</h2>
         <input type="text" id="tiktok-url" placeholder="Masukkan link TikTok di sini" oninput="getValue()">
+        <p id="judul"></p>
         <button id="search-button">Cari Video</button>
-        <div id="download-container">
-            <button id="download-button">Download Video</button>
+        <div class="dDownload">
+            <div id="download-container-video">
+                <button id="download-video">Download Video</button>
+            </div>
+            <div id="download-container-audio">
+                <button id="download-audio">Download Audio</button>
+            </div>
         </div>
     </div>
-<p class="pFoot">
-            Made with love | All right reserved by ar.
-        </p>
+    <p class="pFoot">
+        Made with love | All right reserved by ar.
+    </p>
     <script>
+        var loader = document.getElementById('loader');
+        window.addEventListener('load', function() {
+            loader.style.display = 'none';
+        });
+        //download-container-video
         document.getElementById('search-button').addEventListener('click', function() {
             const url = document.getElementById('tiktok-url').value;
             const apiUrl = `https://api.ngodingaja.my.id/api/tiktok?url=${encodeURIComponent(url)}`;
@@ -80,13 +136,24 @@
             fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
+                console.log(data)
+                var loader = document.getElementById('loader');
+                window.addEventListener('load', function() {
+                    loader.style.display = 'none';
+                });
+                document.getElementById('judul').innerHTML = "caption : " + data.hasil.judul;
                 if (data.status) {
-                    const downloadButton = document.getElementById('download-button');
-                    downloadButton.setAttribute('data-video-url', data.video);
-                    document.getElementById('download-container').style.display = 'block';
+                    const downloadVideo = document.getElementById('download-video');
+                    downloadVideo.setAttribute('data-video-url', data.hasil.tanpawm);
+                    document.getElementById('download-container-video').style.display = 'flex';
+                    //audio
+                    const downloadAudio = document.getElementById('download-audio');
+                    downloadAudio.setAttribute('data-audio-url', data.hasil.musik);
+                    document.getElementById('download-container-audio').style.display = 'flex';
                     document.getElementById('search-button').style.display = 'none';
                 } else {
-                    document.getElementById('download-container').style.display = 'none';
+                    document.getElementById('download-container-video').style.display = 'none';
+                    document.getElementById('download-container-audio').style.display = 'none';
                     alert('Gagal mendapatkan video. Coba lagi dengan link yang valid.');
                 }
             })
@@ -96,7 +163,7 @@
             });
         });
 
-        document.getElementById('download-button').addEventListener('click', function() {
+        document.getElementById('download-video').addEventListener('click', function() {
             const videoUrl = this.getAttribute('data-video-url');
             const a = document.createElement('a');
             a.href = videoUrl;
@@ -105,10 +172,23 @@
             a.click();
             document.body.removeChild(a);
         });
+
+        document.getElementById('download-audio').addEventListener('click', function() {
+            const audioUrl = this.getAttribute('data-audio-url');
+            const b = document.createElement('a');
+            b.href = audioUrl;
+            b.download = 'tiktok-audio.mp3';
+            document.body.appendChild(b);
+            b.click();
+            document.body.removeChild(b);
+        });
+
         function getValue() {
-            document.getElementById('download-container').style.display = 'none';
+            document.getElementById('download-container-video').style.display = 'none';
+            document.getElementById('download-container-audio').style.display = 'none';
             document.getElementById('search-button').style.display = 'block';
         }
+        //download-container-video
     </script>
 </body>
 </html>
